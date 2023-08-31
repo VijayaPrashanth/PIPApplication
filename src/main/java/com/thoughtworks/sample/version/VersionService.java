@@ -18,13 +18,12 @@ public class VersionService {
         this.versionRepository = versionRepository;
     }
 
-    public String getLatestVersion() throws VersionInvalidException{
+    public String getLatestVersion() throws Exception{
         List<Version> latestVersion = versionRepository.getLatestVersion();
+        if(latestVersion.isEmpty())
+            throw new VersionInvalidException();
         Version version = latestVersion.get(0);
         String versionName = version.getName();
-        if (versionName == null) {
-            throw new VersionInvalidException();
-        }
         return versionName;
 
     }

@@ -25,7 +25,7 @@ public class VersionServiceTest {
     private VersionRepository versionRepository;
 
     @Test
-    public void shouldReturnLatestVersion() throws VersionInvalidException {
+    public void shouldReturnLatestVersion() throws Exception {
         versionRepository = mock(VersionRepository.class);
         versionService = new VersionService(versionRepository);
         Version version = new Version(1,"v1");
@@ -39,17 +39,13 @@ public class VersionServiceTest {
 
         assertThat(latestVersion,is(equalTo(expectedVersion)));
     }
-
     @Test
-    public void shouldThrowVersionInvalidExceptionWhenNullIsGiven() {
+    void shouldThrowExceptionIfVersionInvalid() throws VersionInvalidException {
         versionRepository = mock(VersionRepository.class);
         versionService = new VersionService(versionRepository);
         Version version = new Version(1,"null");
-        List<Version> versions = new ArrayList<>();
 
-        versions.add(version);
-
-        when(versionRepository.getLatestVersion()).thenThrow(VersionInvalidException.class);
-
+        assertThrows(VersionInvalidException .class, () -> versionService.getLatestVersion());
     }
+
 }
