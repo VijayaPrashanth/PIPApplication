@@ -1,5 +1,6 @@
 package com.thoughtworks.sample.version.view;
 
+import com.thoughtworks.sample.exception.VersionInvalidException;
 import com.thoughtworks.sample.version.VersionService;
 import com.thoughtworks.sample.version.repository.VersionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -22,13 +24,12 @@ public class VersionController {
     }
 
     @GetMapping
-    public ResponseEntity<String> getVersion() {
+    public HashMap<String,String> getVersion() throws VersionInvalidException {
+        HashMap<String,String> version = new HashMap<>();
         String latestVersion = versionService.getLatestVersion();
-        if (latestVersion != null) {
-            return ResponseEntity.ok().body(Map.of("CurrentVersion", latestVersion).toString());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        version.put("CurrentVersion",latestVersion);
+        return version;
+
     }
 }
 

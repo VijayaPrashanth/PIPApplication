@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface VersionRepository extends JpaRepository<Version,Integer> {
 
-    @Query(value = "SELECT NAME FROM VERSION ORDER BY ID DESC",nativeQuery = true)
-    List<String> getLatestVersion();
+    @Query(value = "SELECT * FROM VERSION ORDER BY ID DESC",nativeQuery = true)
+    List<Version> getLatestVersion();
 }
