@@ -19,7 +19,7 @@ public class VersionService {
     }
 
     public String getLatestVersion() throws Exception{
-        List<Version> latestVersion = versionRepository.getLatestVersion();
+        List<Version> latestVersion = versionRepository.getVersionDetails();
         if(latestVersion.isEmpty())
             throw new VersionInvalidException();
         Version version = latestVersion.get(0);

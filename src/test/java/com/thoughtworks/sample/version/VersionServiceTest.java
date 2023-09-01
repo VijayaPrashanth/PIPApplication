@@ -33,7 +33,7 @@ public class VersionServiceTest {
         String expectedVersion = "v1";
 
         versions.add(version);
-        when(versionRepository.getLatestVersion()).thenReturn(versions);
+        when(versionRepository.getVersionDetails()).thenReturn(versions);
         versionRepository.save(version);
         String latestVersion = versionService.getLatestVersion();
 

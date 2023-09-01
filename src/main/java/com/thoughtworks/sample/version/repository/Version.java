@@ -14,7 +14,7 @@ public class Version {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     @JsonProperty
     @NotNull
     private String name;

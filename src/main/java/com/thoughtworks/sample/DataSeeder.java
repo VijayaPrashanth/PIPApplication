@@ -12,7 +12,7 @@ public class DataSeeder {
     @Bean
     CommandLineRunner initDatabase(VersionRepository versionRepository) {
         return args -> {
-            if (versionRepository.getLatestVersion().isEmpty()) {
+            if (versionRepository.getVersionDetails().isEmpty()) {
                 versionRepository.save(new Version(1,"v1"));
             }
         };
