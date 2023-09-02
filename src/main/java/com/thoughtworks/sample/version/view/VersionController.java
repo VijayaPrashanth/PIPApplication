@@ -29,7 +29,6 @@ public class VersionController {
             @ApiResponse(code = 200, message = "Fetched admin details successfully"),
             @ApiResponse(code = 404, message = "Record not found", response = ErrorResponse.class),
     })
-    @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "Requestor-Type", exposedHeaders = "X-Get-Header")
     @GetMapping()
     public HashMap<String,String> getVersion() throws Exception {
         HashMap<String,String> version = new HashMap<>();
