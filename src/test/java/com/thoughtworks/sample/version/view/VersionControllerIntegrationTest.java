@@ -1,5 +1,6 @@
 package com.thoughtworks.sample.version.view;
 
+import com.thoughtworks.sample.SampleApplication;
 import com.thoughtworks.sample.version.VersionService;
 import com.thoughtworks.sample.version.repository.Version;
 import com.thoughtworks.sample.version.repository.VersionRepository;
@@ -16,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest()
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @WithMockUser

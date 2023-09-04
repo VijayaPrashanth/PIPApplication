@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest()
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @WithMockUser
@@ -64,7 +64,6 @@ public class InventoryControllerIntegrationTest {
                 + "\"price\":5"
                 + "}"
                 +"]";
-        // Perform a GET request to the /inventory endpoint
         mockMvc.perform(get("/inventory"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
