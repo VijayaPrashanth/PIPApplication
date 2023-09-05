@@ -31,7 +31,7 @@ public class InventoryServiceTest {
     @Test
     public void shouldReturnItemList() {
         List<Inventory> inventoryList = new ArrayList<>();
-        Inventory item = new Inventory("onion",new BigDecimal(40));
+        Inventory item = new Inventory("onion",new BigDecimal(40),"KG");
         inventoryList.add(item);
 
         when(inventoryRepository.findAll()).thenReturn(inventoryList);
@@ -40,4 +40,6 @@ public class InventoryServiceTest {
 
         assertEquals(inventoryList, itemList);
     }
+
+
 }

@@ -1,5 +1,6 @@
 package com.thoughtworks.sample.inventory.view;
 
+import com.thoughtworks.sample.SampleApplication;
 import com.thoughtworks.sample.inventory.InventoryService;
 import com.thoughtworks.sample.inventory.repository.Inventory;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest()
+@SpringBootTest(classes = SampleApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @WithMockUser
@@ -45,10 +46,9 @@ public class InventoryControllerIntegrationTest {
 
     @Test
     public void shouldReturnItemsFromInventory() throws Exception {
-        // Mock the behavior of the InventoryService
-        Inventory item1 = new Inventory("Item1", new BigDecimal(10));
+        Inventory item1 = new Inventory("Item1", new BigDecimal(10),"KG");
         item1.setId(1);
-        Inventory item2 = new Inventory("Item2", new BigDecimal(5));
+        Inventory item2 = new Inventory("Item2", new BigDecimal(5),"KG");
         item2.setId(2);
         List<Inventory> itemList = Arrays.asList(item1, item2);
         when(inventoryService.getItemList()).thenReturn(itemList);
