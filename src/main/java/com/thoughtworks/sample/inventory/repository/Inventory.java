@@ -20,15 +20,21 @@ public class Inventory {
     @NotNull
     private String name;
 
-    @Column(name = "price")
+    @Column(name = "price",nullable = false)
     @JsonProperty
     private BigDecimal price;
+
+    @Column(name = "unit",nullable = false)
+    @JsonProperty
+    @NotNull
+    private String unit;
     public Inventory() {
     }
 
-    public Inventory(String name, BigDecimal price) {
+    public Inventory(String name, BigDecimal price,String unit) {
         this.name = name;
         this.price = price;
+        this.unit = unit;
     }
 
     public int getId() {
@@ -53,5 +59,13 @@ public class Inventory {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }
