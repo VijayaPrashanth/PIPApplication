@@ -5,6 +5,7 @@ import com.thoughtworks.sample.SampleApplication;
 import com.thoughtworks.sample.cart.CartService;
 import com.thoughtworks.sample.cart.repository.Cart;
 import com.thoughtworks.sample.cart.repository.CartRepository;
+import com.thoughtworks.sample.exception.ItemNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,12 +21,14 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = SampleApplication.class)
@@ -86,5 +89,16 @@ public class CartControllerIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
+    }
+
+    @Test
+    public void shouldDeleteItemFromCartById() throws ItemNotFoundException,Exception {
+        Cart item = new Cart("onion", 2, "KG");
+        when(cartService.deleteItem(1)).thenReturn("Item removed from the cart");
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/cart/1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Item removed from the cart"));
     }
 }

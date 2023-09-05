@@ -6,7 +6,7 @@ import com.sun.istack.NotNull;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "cart")
+@Table
 public class Cart {
 
     @Id
@@ -15,22 +15,28 @@ public class Cart {
     @JsonProperty
     private int id;
 
-    @Column(name = "name",nullable = false)
+    @Column(name = "name", nullable = false)
     @JsonProperty
     @NotNull
     private String name;
 
-    @Column(name = "quantity",nullable = false)
+    @Column(name = "quantity", nullable = false)
     @JsonProperty
     @NotNull
-    private Integer quantity;
+    private int quantity;
+
+    @Column(name = "unit", nullable = false)
+    @JsonProperty
+    @NotNull
+    private String unit;
 
     public Cart() {
     }
 
-    public Cart(String name, Integer quantity) {
+    public Cart(String name, Integer quantity, String unit) {
         this.name = name;
         this.quantity = quantity;
+        this.unit = unit;
     }
 
     public int getId() {
@@ -55,5 +61,13 @@ public class Cart {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }
