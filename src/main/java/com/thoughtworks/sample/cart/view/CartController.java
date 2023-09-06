@@ -2,15 +2,14 @@ package com.thoughtworks.sample.cart.view;
 
 import com.thoughtworks.sample.cart.CartService;
 import com.thoughtworks.sample.cart.repository.Cart;
+import com.thoughtworks.sample.exception.ItemNotFoundException;
 import com.thoughtworks.sample.handlers.ErrorResponse;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
@@ -27,8 +26,19 @@ public class CartController {
             @ApiResponse(code = 404, message = "Record not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Something failed in the server", response = ErrorResponse.class)
     })
-    @PostMapping("/add")
-    public Cart addItemsToCart(@Validated@RequestBody Cart cart)  {
+    @PutMapping("/add")
+    public List<Cart> addItemsToCart(@RequestBody Cart cart)  {
         return cartService.addItems(cart);
+    }
+
+
+    @GetMapping()
+    public List<Cart> getItemsFromCart() {
+        return cartService.getItems();
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteItemFromCart(@PathVariable int id) throws ItemNotFoundException {
+        return cartService.deleteItem(id);
     }
 }
