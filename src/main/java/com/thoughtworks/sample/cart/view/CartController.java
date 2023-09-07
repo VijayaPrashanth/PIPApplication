@@ -22,15 +22,14 @@ public class CartController {
     }
 
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Fetched admin details successfully"),
+            @ApiResponse(code = 200, message = "Fetched item details successfully"),
             @ApiResponse(code = 404, message = "Record not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Something failed in the server", response = ErrorResponse.class)
     })
     @PutMapping("/add")
-    public List<Cart> addItemsToCart(@RequestBody Cart cart)  {
+    public List<Cart> addItemsToCart(@RequestBody Cart cart) throws ItemNotFoundException {
         return cartService.addItems(cart);
     }
-
 
     @GetMapping()
     public List<Cart> getItemsFromCart() {
