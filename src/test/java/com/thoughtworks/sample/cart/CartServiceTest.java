@@ -58,6 +58,24 @@ public class CartServiceTest {
     }
 
     @Test
+    public void shouldAddEditedItemsToCart() throws ItemNotFoundException {
+
+        Inventory inventory = new Inventory("onion",new BigDecimal(40),"1KG");
+        Cart item1 = new Cart(inventory,"onion", 2, "1KG");
+        List<Cart> cartItems = Arrays.asList(item1);
+
+        when(inventoryRepository.existsById(item1.getId())).thenReturn(true);
+        when(inventoryRepository.findById(item1.getId())).thenReturn(Optional.of(inventory));
+        when(cartRepository.getItemDetails()).thenReturn(cartItems);
+        List<Cart> itemsFromService = cartService.addItems(item1);
+
+
+        verify(cartRepository).getItemDetails();
+        assertNotNull(itemsFromService);
+        assertEquals(cartItems, itemsFromService);
+    }
+
+    @Test
     public void shouldGetItemsFromCart() {
 
         Inventory inventory = new Inventory("onion",new BigDecimal(40),"1KG");
