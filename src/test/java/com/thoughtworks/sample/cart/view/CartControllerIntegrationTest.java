@@ -6,10 +6,12 @@ import com.thoughtworks.sample.cart.CartService;
 import com.thoughtworks.sample.cart.repository.Cart;
 import com.thoughtworks.sample.cart.repository.CartRepository;
 import com.thoughtworks.sample.exception.ItemNotFoundException;
+import com.thoughtworks.sample.inventory.repository.Inventory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -23,12 +25,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = SampleApplication.class)
@@ -46,7 +50,7 @@ public class CartControllerIntegrationTest {
     @InjectMocks
     private CartController cartController;
 
-    @Autowired
+    @Mock
     private CartRepository cartRepository;
 
     @BeforeEach
@@ -61,8 +65,9 @@ public class CartControllerIntegrationTest {
     }
 
     @Test
-    public void shouldAddItemsToCart() throws Exception {
-        Cart item = new Cart("onion",2,"KG");
+    public void shouldAddItemsToCart() throws Exception, ItemNotFoundException {
+        Inventory inventory = new Inventory("onion",new BigDecimal(40),"1KG");
+        Cart item = new Cart(inventory,"onion", 2, "KG");
         String cartJson = new ObjectMapper().writeValueAsString(item);
         List<Cart> itemInCart = Arrays.asList(item);
 
@@ -79,26 +84,40 @@ public class CartControllerIntegrationTest {
 
     @Test
     public void shouldGetItemsFromCart() throws Exception {
-        Cart item1 = new Cart("onion", 2, "KG");
-        Cart item2 = new Cart("apple", 3, "KG");
+        Inventory inventory1 = new Inventory("onion",new BigDecimal(40),"1KG");
+        Cart item1 = new Cart(inventory1,"onion", 2, "KG");
+        Inventory inventory2 = new Inventory("tomato",new BigDecimal(20),"1KG");
+        Cart item2 = new Cart(inventory2,"tomato", 2, "1KG");
         List<Cart> cartItems = Arrays.asList(item1, item2);
+        String response = new ObjectMapper().writeValueAsString(cartItems);
 
         when(cartService.getItems()).thenReturn(cartItems);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/cart")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(response))
                 .andExpect(status().isOk())
                 .andReturn();
     }
 
     @Test
     public void shouldDeleteItemFromCartById() throws ItemNotFoundException,Exception {
-        Cart item = new Cart("onion", 2, "KG");
+
         when(cartService.deleteItem(1)).thenReturn("Item removed from the cart");
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/cart/1")
+        mockMvc.perform(delete("/cart/1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Item removed from the cart"));
     }
+
+//    @Test
+//    public void shouldThrowExceptionWhenInvalidIdIsGiven() throws ItemNotFoundException, Exception {
+//        int id=1;
+//        when(cartService.deleteItem(id)).thenThrow(new ItemNotFoundException());
+//
+//        mockMvc.perform(delete("/cart/{id}", id)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isBadRequest());
+//    }
 }
