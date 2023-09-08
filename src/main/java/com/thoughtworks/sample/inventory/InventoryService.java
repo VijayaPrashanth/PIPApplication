@@ -1,5 +1,6 @@
 package com.thoughtworks.sample.inventory;
 
+import com.thoughtworks.sample.exception.ItemNotFoundException;
 import com.thoughtworks.sample.inventory.repository.Inventory;
 import com.thoughtworks.sample.inventory.repository.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,16 @@ public class InventoryService {
         return inventoryRepository.findAll();
     }
 
-
+    public List<Inventory> addItems(Inventory inventory) {
+        inventoryRepository.save(inventory);
+        return inventoryRepository.getItems();
+    }
+    public String deleteItem(int id) throws ItemNotFoundException {
+        if(!inventoryRepository.existsById(id))
+            throw new ItemNotFoundException();
+        inventoryRepository.deleteById(id);
+        return "Product removed from Inventory";
+    }
     @Override
     public int hashCode() {
         return super.hashCode();
