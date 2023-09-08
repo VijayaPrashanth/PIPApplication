@@ -81,6 +81,23 @@ public class CartControllerIntegrationTest {
 
     }
 
+    @Test
+    public void shouldAddEditedItemsToCart() throws Exception, ItemNotFoundException {
+        Inventory inventory = new Inventory("onion",new BigDecimal(40),"1KG");
+        Cart item = new Cart(inventory,"onion", 2, "KG");
+        String cartJson = new ObjectMapper().writeValueAsString(item);
+        List<Cart> itemInCart = Arrays.asList(item);
+
+        when(cartService.addItems(any(Cart.class))).thenReturn(itemInCart);
+
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/cart/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cartJson))
+                .andExpect(status().isOk());
+
+    }
+
 
     @Test
     public void shouldGetItemsFromCart() throws Exception {
@@ -111,13 +128,13 @@ public class CartControllerIntegrationTest {
                 .andExpect(MockMvcResultMatchers.content().string("Item removed from the cart"));
     }
 
-//    @Test
-//    public void shouldThrowExceptionWhenInvalidIdIsGiven() throws ItemNotFoundException, Exception {
-//        int id=1;
-//        when(cartService.deleteItem(id)).thenThrow(new ItemNotFoundException());
-//
-//        mockMvc.perform(delete("/cart/{id}", id)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//    }
+    @Test
+    public void shouldThrowExceptionWhenInvalidIdIsGiven() throws ItemNotFoundException, Exception {
+        int id=1;
+        when(cartService.deleteItem(id)).thenThrow(new ItemNotFoundException());
+
+        mockMvc.perform(delete("/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
 }
