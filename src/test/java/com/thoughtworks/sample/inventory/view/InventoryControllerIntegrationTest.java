@@ -100,6 +100,22 @@ public class InventoryControllerIntegrationTest {
     }
 
     @Test
+    public void shouldAddEditedItemsToInventory() throws Exception {
+        Inventory item = new Inventory("onion", new BigDecimal("20.00"), "1KG");
+        List<Inventory> itemList = new ArrayList<>();
+        itemList.add(item);
+        String response = new ObjectMapper().writeValueAsString(item);
+
+
+        when(inventoryService.addItems(any(Inventory.class))).thenReturn(itemList);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/inventory/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(response))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     public void shouldDeleteProductsFromInventory() throws Exception, ItemNotFoundException {
         int id = 1;
 
