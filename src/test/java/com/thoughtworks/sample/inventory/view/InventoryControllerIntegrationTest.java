@@ -1,11 +1,16 @@
 package com.thoughtworks.sample.inventory.view;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.sample.SampleApplication;
+import com.thoughtworks.sample.cart.CartService;
+import com.thoughtworks.sample.exception.ItemNotFoundException;
 import com.thoughtworks.sample.inventory.InventoryService;
 import com.thoughtworks.sample.inventory.repository.Inventory;
+import com.thoughtworks.sample.inventory.repository.InventoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -13,15 +18,19 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -38,6 +47,9 @@ public class InventoryControllerIntegrationTest {
     private InventoryController inventoryController;
     @MockBean
     private InventoryService inventoryService;
+
+    @Mock
+    private InventoryRepository inventoryRepository;
 
     @BeforeEach
     public void setup() {
@@ -69,4 +81,46 @@ public class InventoryControllerIntegrationTest {
                 .andExpect(content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content().json(priceListJson));
     }
+
+
+    @Test
+    public void shouldAddItemsToInventory() throws Exception {
+        Inventory item = new Inventory("onion", new BigDecimal("20.00"), "1KG");
+        List<Inventory> itemList = new ArrayList<>();
+        itemList.add(item);
+        String response = new ObjectMapper().writeValueAsString(item);
+
+
+        when(inventoryService.addItems(any(Inventory.class))).thenReturn(itemList);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/inventory/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(response))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldDeleteProductsFromInventory() throws Exception, ItemNotFoundException {
+        int id = 1;
+
+        when(inventoryService.deleteItem(id)).thenReturn("Product removed from Inventory");
+
+        mockMvc.perform(delete("/inventory/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Product removed from Inventory"));
+
+
+        verify(inventoryService, times(1)).deleteItem(id);
+    }
+
+//    @Test
+//    public void shouldThrowExceptionWhenInvalidIdIsGiven() throws Exception, ItemNotFoundException {
+//        when(inventoryRepository.existsById(1)).thenReturn(false);
+//        when(inventoryService.deleteItem(1)).thenThrow(new ItemNotFoundException());
+//
+//        mockMvc.perform(delete("/inventory/{id}", 1)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isNotFound());
+//
+//    }
 }
