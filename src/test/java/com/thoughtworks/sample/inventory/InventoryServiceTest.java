@@ -53,6 +53,16 @@ public class InventoryServiceTest {
     }
 
     @Test
+    public void shouldAddEditedItemToInventory() {
+        Inventory item = new Inventory("onion",new BigDecimal(40),"1KG");
+
+        when(inventoryRepository.save(item)).thenReturn(item);
+        inventoryService.addItems(item);
+
+        verify(inventoryRepository,times(1)).save(item);
+    }
+
+    @Test
     public void shouldDeleteItemFromInventory() throws ItemNotFoundException {
         int id = 1;
 
