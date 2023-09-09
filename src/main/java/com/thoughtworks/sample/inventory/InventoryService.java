@@ -26,6 +26,10 @@ public class InventoryService {
         inventoryRepository.save(inventory);
         return inventoryRepository.getItems();
     }
+    public List<Inventory> addEditedItems(Inventory inventory) {
+        inventoryRepository.save(inventory);
+        return inventoryRepository.getItems();
+    }
     public String deleteItem(int id) throws ItemNotFoundException {
         if(!inventoryRepository.existsById(id))
             throw new ItemNotFoundException();

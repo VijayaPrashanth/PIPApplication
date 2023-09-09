@@ -36,6 +36,11 @@ public class InventoryController {
     public List<Inventory> addItemsToInventory(@RequestBody Inventory inventory)  {
         return inventoryService.addItems(inventory);
     }
+
+    @PutMapping("/edit")
+    public List<Inventory> addEditedItemsToInventory(@RequestBody Inventory inventory)  {
+        return inventoryService.addEditedItems(inventory);
+    }
     @DeleteMapping("/{id}")
     public String deleteItemFromCart(@PathVariable int id) throws ItemNotFoundException {
         return inventoryService.deleteItem(id);
