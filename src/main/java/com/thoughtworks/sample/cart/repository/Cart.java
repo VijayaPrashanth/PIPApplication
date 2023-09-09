@@ -25,10 +25,10 @@ public class Cart {
     @NotNull
     private String name;
 
-    @Column(name = "quantity", nullable = false)
+    @Column(name = "itemscount", nullable = false)
     @JsonProperty
     @NotNull
-    private int quantity;
+    private int itemsCount;
 
     @Column(name = "unit", nullable = false)
     @JsonProperty
@@ -38,10 +38,10 @@ public class Cart {
     public Cart() {
     }
 
-    public Cart(Inventory inventory,String name, Integer quantity, String unit) {
+    public Cart(Inventory inventory,String name, Integer itemsCount, String unit) {
         this.inventory = inventory;
         this.name = name;
-        this.quantity = quantity;
+        this.itemsCount = itemsCount;
         this.unit = unit;
     }
     public int getId() {
@@ -60,14 +60,6 @@ public class Cart {
         this.name = name;
     }
 
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
     public String getUnit() {
         return unit;
     }
@@ -82,5 +74,13 @@ public class Cart {
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
+    }
+
+    public int getItemsCount() {
+        return itemsCount;
+    }
+
+    public void setItemsCount(int itemsCount) {
+        this.itemsCount = itemsCount;
     }
 }

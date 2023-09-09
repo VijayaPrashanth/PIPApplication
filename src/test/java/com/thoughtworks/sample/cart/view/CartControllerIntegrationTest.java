@@ -31,8 +31,8 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = SampleApplication.class)
@@ -68,33 +68,52 @@ public class CartControllerIntegrationTest {
     public void shouldAddItemsToCart() throws Exception, ItemNotFoundException {
         Inventory inventory = new Inventory("onion",new BigDecimal(40),"1KG");
         Cart item = new Cart(inventory,"onion", 2, "KG");
-        String cartJson = new ObjectMapper().writeValueAsString(item);
+        String response = new ObjectMapper().writeValueAsString(item);
         List<Cart> itemInCart = Arrays.asList(item);
 
         when(cartService.addItems(any(Cart.class))).thenReturn(itemInCart);
 
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/cart/add")
+        mockMvc.perform(MockMvcRequestBuilders.put("/cart")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(cartJson))
+                .content(response))
                 .andExpect(status().isOk());
 
     }
 
     @Test
-    public void shouldAddEditedItemsToCart() throws Exception, ItemNotFoundException {
+    public void shouldUpdateItemsCountInCart() throws ItemNotFoundException, Exception {
         Inventory inventory = new Inventory("onion",new BigDecimal(40),"1KG");
         Cart item = new Cart(inventory,"onion", 2, "KG");
-        String cartJson = new ObjectMapper().writeValueAsString(item);
-        List<Cart> itemInCart = Arrays.asList(item);
+        int itemId = 1;
+        int itemsCount = 5;
+        item.setItemsCount(itemsCount);
 
-        when(cartService.addItems(any(Cart.class))).thenReturn(itemInCart);
+        List<Cart> cartItems = Arrays.asList(item);
+
+        when(cartService.updateItemsCount(itemId, itemsCount)).thenReturn(cartItems);
 
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/cart/add")
+        mockMvc.perform(MockMvcRequestBuilders.put("/cart/{id}", itemId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(cartJson))
-                .andExpect(status().isOk());
+                        .content(String.valueOf(itemsCount)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenInvalidIdIsGivenForUpdating() throws ItemNotFoundException, Exception {
+        Inventory inventory = new Inventory("onion",new BigDecimal(40),"1KG");
+        Cart item = new Cart(inventory,"onion", 2, "KG");
+        int id = 10;
+        int itemsCount = 12;
+
+        when(cartRepository.existsById(item.getId())).thenReturn(false);
+        when(cartService.updateItemsCount(id,itemsCount)).thenThrow(ItemNotFoundException.class);
+
+        mockMvc.perform(put("/cart/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
 
     }
 
@@ -116,6 +135,7 @@ public class CartControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
     }
+
 
     @Test
     public void shouldDeleteItemFromCartById() throws ItemNotFoundException,Exception {
@@ -142,7 +162,6 @@ public class CartControllerIntegrationTest {
     @Test
     public void shouldReturnMessageWhenValidIsGivenForDeletion() throws Exception, ItemNotFoundException {
         int id =1;
-        //when(cartRepository.existsById(id)).thenReturn(true);
         when(cartService.deleteItemByInventoryId(id)).thenReturn("Item removed from cart as it is modified in inventory");
 
         mockMvc.perform(delete("/cart/byInventory/{id}",id)

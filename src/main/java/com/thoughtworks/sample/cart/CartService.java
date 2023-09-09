@@ -3,7 +3,6 @@ package com.thoughtworks.sample.cart;
 import com.thoughtworks.sample.cart.repository.Cart;
 import com.thoughtworks.sample.cart.repository.CartRepository;
 import com.thoughtworks.sample.exception.ItemNotFoundException;
-import com.thoughtworks.sample.inventory.repository.Inventory;
 import com.thoughtworks.sample.inventory.repository.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,18 +29,17 @@ public class CartService {
 
     public List<Cart> addItems(Cart cart) throws ItemNotFoundException {
         cartRepository.save(cart);
-        return cartRepository.findAll();
+        return cartRepository.getItemDetails();
     }
 
-    public List<Cart> addEditedItems(Cart cart) throws ItemNotFoundException {
-        Inventory inventory = cart.getInventory();
-        Cart itemFromCartByInventoryId = cartRepository.getItemFromCartByInventoryId(inventory.getId());
-        if(itemFromCartByInventoryId==null){
+    public List<Cart> updateItemsCount(int id, int itemsCount) throws ItemNotFoundException {
+        if(!cartRepository.existsById(id))
             throw new ItemNotFoundException();
-        }
-        itemFromCartByInventoryId.setQuantity(cart.getQuantity());
-        cartRepository.save(itemFromCartByInventoryId);
-        return cartRepository.findAll();
+        Optional<Cart> cartOptional = cartRepository.findById(id);
+        Cart cart = cartOptional.get();
+        cart.setItemsCount(itemsCount);
+        cartRepository.save(cart);
+        return cartRepository.getItemDetails();
     }
 
     public String deleteItem(int id) throws ItemNotFoundException {

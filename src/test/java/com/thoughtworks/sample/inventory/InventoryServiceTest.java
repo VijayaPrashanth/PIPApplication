@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static org.mockito.Mockito.*;
 
@@ -31,9 +31,11 @@ public class InventoryServiceTest {
 
     @Test
     public void shouldReturnItemList() {
-        List<Inventory> inventoryList = new ArrayList<>();
-        Inventory item = new Inventory("onion",new BigDecimal(40),"1KG");
-        inventoryList.add(item);
+
+        Inventory item1 = new Inventory("onion",new BigDecimal(40),"1KG");
+        Inventory item2 = new Inventory("tomato",new BigDecimal(100),"1KG");
+        List<Inventory> inventoryList = Arrays.asList(item1,item2);
+
 
         when(inventoryRepository.findAll()).thenReturn(inventoryList);
 
@@ -53,13 +55,28 @@ public class InventoryServiceTest {
     }
 
     @Test
-    public void shouldAddEditedItemToInventory() {
+    public void shouldUpdateItemToInventory() throws ItemNotFoundException {
         Inventory item = new Inventory("onion",new BigDecimal(40),"1KG");
+        int id = item.getId();
+        List<Inventory> itemList = Arrays.asList(item);
 
-        when(inventoryRepository.save(item)).thenReturn(item);
-        inventoryService.addItems(item);
+        when(inventoryRepository.existsById(id)).thenReturn(true);
+        when(inventoryService.updateItems(id,item)).thenReturn(itemList);
 
-        verify(inventoryRepository,times(1)).save(item);
+        assertEquals(itemList,inventoryService.updateItems(id,item));
+        verify(inventoryRepository,times(2)).save(item);
+
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenInvalidIdIsGivenForUpdatingInventory() throws ItemNotFoundException {
+        Inventory item = new Inventory("onion",new BigDecimal(40),"1KG");
+        int id = item.getId();
+        List<Inventory> itemList = Arrays.asList(item);
+
+        when(inventoryRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(ItemNotFoundException.class,()->inventoryService.updateItems(id,item));
     }
 
     @Test

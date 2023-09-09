@@ -63,7 +63,7 @@ public class InventoryControllerIntegrationTest {
         List<Inventory> itemList = Arrays.asList(item1, item2);
         when(inventoryService.getItemList()).thenReturn(itemList);
 
-        String priceListJson = "[{"
+        String response = "[{"
                 + "\"id\":1,"
                 + "\"name\":\"Item1\","
                 + "\"price\":10"
@@ -77,7 +77,7 @@ public class InventoryControllerIntegrationTest {
         mockMvc.perform(get("/inventory"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().json(priceListJson));
+                .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
 
@@ -91,26 +91,43 @@ public class InventoryControllerIntegrationTest {
 
         when(inventoryService.addItems(any(Inventory.class))).thenReturn(itemList);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/inventory/add")
+        mockMvc.perform(MockMvcRequestBuilders.post("/inventory")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(response))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void shouldAddEditedItemsToInventory() throws Exception {
+    public void shouldUpdateItemsToInventory() throws Exception, ItemNotFoundException {
         Inventory item = new Inventory("onion", new BigDecimal("20.00"), "1KG");
+        int id = item.getId();
         List<Inventory> itemList = new ArrayList<>();
         itemList.add(item);
         String response = new ObjectMapper().writeValueAsString(item);
 
+        when(inventoryRepository.existsById(id)).thenReturn(true);
+        when(inventoryService.updateItems(id,item)).thenReturn(itemList);
 
-        when(inventoryService.addItems(any(Inventory.class))).thenReturn(itemList);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/inventory/add")
+        mockMvc.perform(MockMvcRequestBuilders.put("/inventory/{id}",id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(response))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenInvalidIdIsGivenForUpdatingItemInInventory() throws ItemNotFoundException, Exception {
+        Inventory item = new Inventory("onion", new BigDecimal("20.00"), "1KG");
+        int id = item.getId();
+        List<Inventory> itemList = new ArrayList<>();
+        itemList.add(item);
+
+        when(inventoryRepository.existsById(id)).thenReturn(false);
+        when(inventoryService.updateItems(id,item)).thenThrow(ItemNotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/inventory/{id}",id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
     }
 
     @Test

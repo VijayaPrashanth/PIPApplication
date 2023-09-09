@@ -46,11 +46,8 @@ public class CartServiceTest {
         Cart item1 = new Cart(inventory,"onion", 2, "1KG");
         List<Cart> cartItems = Arrays.asList(item1);
 
-        when(inventoryRepository.existsById(item1.getId())).thenReturn(true);
-        when(inventoryRepository.findById(item1.getId())).thenReturn(Optional.of(inventory));
         when(cartRepository.getItemDetails()).thenReturn(cartItems);
         List<Cart> itemsFromService = cartService.addItems(item1);
-
 
         verify(cartRepository).getItemDetails();
         assertNotNull(itemsFromService);
@@ -58,23 +55,40 @@ public class CartServiceTest {
     }
 
     @Test
-    public void shouldAddEditedItemsToCart() throws ItemNotFoundException {
+    public void shouldUpdateItemCountToCart() throws ItemNotFoundException {
 
         Inventory inventory = new Inventory("onion",new BigDecimal(40),"1KG");
-        Cart item1 = new Cart(inventory,"onion", 2, "1KG");
-        List<Cart> cartItems = Arrays.asList(item1);
+        Cart item = new Cart(inventory,"onion", 2, "1KG");
+        int id = item.getId();
+        int itemsCount = 4;
+        item.setItemsCount(itemsCount);
+        List<Cart> cartItems = Arrays.asList(item);
+        cartRepository.save(item);
 
-        when(inventoryRepository.existsById(item1.getId())).thenReturn(true);
-        when(inventoryRepository.findById(item1.getId())).thenReturn(Optional.of(inventory));
+        when(cartRepository.existsById(id)).thenReturn(true);
+        when(cartRepository.findById(id)).thenReturn(Optional.of(item));
+        when(cartRepository.save(item)).thenReturn(item);
         when(cartRepository.getItemDetails()).thenReturn(cartItems);
-        List<Cart> itemsFromService = cartService.addItems(item1);
+        List<Cart> itemsFromService = cartService.updateItemsCount(id,itemsCount);
 
-
+        verify(cartRepository,times(2)).save(item);
         verify(cartRepository).getItemDetails();
         assertNotNull(itemsFromService);
         assertEquals(cartItems, itemsFromService);
     }
 
+    @Test
+    public void shouldThrowExceptionWhenInvalidIdIsGivenForUpdating() throws ItemNotFoundException{
+        Inventory inventory = new Inventory("onion",new BigDecimal(40),"1KG");
+        Cart item = new Cart(inventory,"onion", 2, "1KG");
+        int id = item.getId();
+        int itemsCount = 4;
+        List<Cart> cartItems = Arrays.asList(item);
+
+        when(cartRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(ItemNotFoundException.class,()->cartService.updateItemsCount(id,itemsCount));
+    }
     @Test
     public void shouldGetItemsFromCart() {
 
@@ -108,11 +122,38 @@ public class CartServiceTest {
 
     @Test()
     public void shouldThrowExceptionWhenDeletingNonExistentItem() throws ItemNotFoundException {
-        int itemIdToDelete = 1;
+        int id = 1;
 
-        when(cartRepository.existsById(itemIdToDelete)).thenReturn(false);
+        when(cartRepository.existsById(id)).thenReturn(false);
 
-        assertThrows(ItemNotFoundException.class,()-> cartService.deleteItem(itemIdToDelete));
+        assertThrows(ItemNotFoundException.class,()-> cartService.deleteItem(id));
 
     }
+    @Test
+    public void shouldDeleteItemFromCartByInventory() throws ItemNotFoundException {
+
+        int id = 1;
+
+        when(cartRepository.existsById(id)).thenReturn(true);
+        String result = cartService.deleteItemByInventoryId(id);
+
+        verify(cartRepository).existsById(id);
+        verify(cartRepository).deleteById(id);
+        assertEquals("Item removed from cart as it is modified in inventory", result);
+    }
+
+    @Test()
+    public void shouldReturnItemIsNotPresentInCartWhenInvalidIdIsGiven() throws ItemNotFoundException {
+        int id = 1;
+
+        when(cartRepository.existsById(id)).thenReturn(false);
+
+        String result = cartService.deleteItemByInventoryId(id);
+
+        verify(cartRepository).existsById(id);
+        assertEquals("This item is not present in cart", result);
+
+    }
+
+
 }

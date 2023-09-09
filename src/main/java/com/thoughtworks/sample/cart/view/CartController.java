@@ -26,27 +26,27 @@ public class CartController {
             @ApiResponse(code = 404, message = "Record not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Something failed in the server", response = ErrorResponse.class)
     })
-    @PutMapping("/add")
-    public List<Cart> putItems(@RequestBody Cart cart) throws ItemNotFoundException {
-        return cartService.addItems(cart);
-    }
-
-    @PutMapping("/edit")
-    public List<Cart> addEditedItemsToCart(@RequestBody Cart cart) throws ItemNotFoundException {
-        return cartService.addEditedItems(cart);
-    }
-
     @GetMapping()
-    public List<Cart> viewItems() {
+    public List<Cart> getItems() {
         return cartService.getItems();
     }
 
+    @PutMapping()
+    public List<Cart> putItem(@RequestBody Cart cart) throws ItemNotFoundException {
+        return cartService.addItems(cart);
+    }
+
+    @PutMapping("/{id}")
+    public List<Cart> updateItemsCount(@PathVariable int id,@RequestBody int itemsCount) throws ItemNotFoundException {
+        return cartService.updateItemsCount(id,itemsCount);
+    }
+
     @DeleteMapping("/{id}")
-    public String deleteItemFromCart(@PathVariable int id) throws ItemNotFoundException {
+    public String deleteItem(@PathVariable int id) throws ItemNotFoundException {
         return cartService.deleteItem(id);
     }
     @DeleteMapping("/byInventory/{id}")
-    public String deleteItemFromCartByInventoryId(@PathVariable int id) throws ItemNotFoundException {
+    public String deleteItemByInventory(@PathVariable int id) throws ItemNotFoundException {
         return cartService.deleteItemByInventoryId(id);
     }
 }
