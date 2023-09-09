@@ -24,22 +24,24 @@ public class CartService {
         this.cartRepository = cartRepository;
     }
 
-    public List<Cart> addItems(Cart cart) throws ItemNotFoundException {
-
-        if(!inventoryRepository.existsById(cart.getId()))
-            throw new ItemNotFoundException();
-        Optional<Inventory> inventoryOptional = inventoryRepository.findById(cart.getId());
-        Inventory inventory = inventoryOptional.get();
-        Cart cart1 = new Cart(inventory, cart.getName(), cart.getQuantity(), cart.getUnit());
-
-        cartRepository.save(cart1);
+    public List<Cart> getItems() {
         return cartRepository.getItemDetails();
     }
 
+    public List<Cart> addItems(Cart cart) throws ItemNotFoundException {
+        cartRepository.save(cart);
+        return cartRepository.findAll();
+    }
 
-    public List<Cart> getItems() {
-
-        return cartRepository.getItemDetails();
+    public List<Cart> addEditedItems(Cart cart) throws ItemNotFoundException {
+        Inventory inventory = cart.getInventory();
+        Cart itemFromCartByInventoryId = cartRepository.getItemFromCartByInventoryId(inventory.getId());
+        if(itemFromCartByInventoryId==null){
+            throw new ItemNotFoundException();
+        }
+        itemFromCartByInventoryId.setQuantity(cart.getQuantity());
+        cartRepository.save(itemFromCartByInventoryId);
+        return cartRepository.findAll();
     }
 
     public String deleteItem(int id) throws ItemNotFoundException {
@@ -47,5 +49,14 @@ public class CartService {
             throw new ItemNotFoundException();
         cartRepository.deleteById(id);
         return "Item removed from the cart";
+    }
+
+    public String deleteItemByInventoryId(int id) {
+        if(!cartRepository.existsById(id))
+        {
+            return "This item is not present in cart";
+        }
+        cartRepository.deleteById(id);
+        return "Item removed from cart as it is modified in inventory";
     }
 }

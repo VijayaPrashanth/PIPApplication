@@ -11,11 +11,12 @@ import javax.persistence.*;
 public class Cart {
 
     @Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @JsonProperty
     private int id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name="inventory_id",referencedColumnName = "id")
     private Inventory inventory;
 

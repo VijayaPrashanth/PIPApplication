@@ -27,17 +27,26 @@ public class CartController {
             @ApiResponse(code = 500, message = "Something failed in the server", response = ErrorResponse.class)
     })
     @PutMapping("/add")
-    public List<Cart> addItemsToCart(@RequestBody Cart cart) throws ItemNotFoundException {
+    public List<Cart> putItems(@RequestBody Cart cart) throws ItemNotFoundException {
         return cartService.addItems(cart);
     }
 
+    @PutMapping("/edit")
+    public List<Cart> addEditedItemsToCart(@RequestBody Cart cart) throws ItemNotFoundException {
+        return cartService.addEditedItems(cart);
+    }
+
     @GetMapping()
-    public List<Cart> getItemsFromCart() {
+    public List<Cart> viewItems() {
         return cartService.getItems();
     }
 
     @DeleteMapping("/{id}")
     public String deleteItemFromCart(@PathVariable int id) throws ItemNotFoundException {
         return cartService.deleteItem(id);
+    }
+    @DeleteMapping("/byInventory/{id}")
+    public String deleteItemFromCartByInventoryId(@PathVariable int id) throws ItemNotFoundException {
+        return cartService.deleteItemByInventoryId(id);
     }
 }
