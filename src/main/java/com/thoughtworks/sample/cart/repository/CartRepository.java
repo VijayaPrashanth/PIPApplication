@@ -13,6 +13,4 @@ public interface CartRepository extends JpaRepository<Cart,Integer> {
     @Query(value = "SELECT * FROM CART ORDER BY ID",nativeQuery = true)
     List<Cart> getItemDetails();
 
-    @Query(value = "SELECT * FROM CART WHERE INVENTORY_ID=?1",nativeQuery = true)
-    Cart getItemFromCartByInventoryId(int id);
 }
