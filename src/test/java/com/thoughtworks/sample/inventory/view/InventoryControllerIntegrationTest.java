@@ -43,8 +43,6 @@ public class InventoryControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @InjectMocks
-    private InventoryController inventoryController;
     @MockBean
     private InventoryService inventoryService;
 
@@ -129,14 +127,15 @@ public class InventoryControllerIntegrationTest {
         verify(inventoryService, times(1)).deleteItem(id);
     }
 
-//    @Test
-//    public void shouldThrowExceptionWhenInvalidIdIsGiven() throws Exception, ItemNotFoundException {
-//        when(inventoryRepository.existsById(1)).thenReturn(false);
-//        when(inventoryService.deleteItem(1)).thenThrow(new ItemNotFoundException());
-//
-//        mockMvc.perform(delete("/inventory/{id}", 1)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound());
-//
-//    }
+    @Test
+    public void shouldThrowExceptionWhenInvalidIdIsGiven() throws Exception, ItemNotFoundException {
+        int id =4;
+        when(inventoryRepository.existsById(id)).thenReturn(false);
+        when(inventoryService.deleteItem(id)).thenThrow(ItemNotFoundException.class);
+
+        mockMvc.perform(delete("/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+    }
 }
