@@ -6,3 +6,6 @@ spring:
     url: jdbc:postgresql://localhost:5433/sampleengine
     username: sampleengine
     password: postgres
+  logging:
+    level:
+      org.springframework.security: DEBUG
