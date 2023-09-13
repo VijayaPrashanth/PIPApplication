@@ -31,13 +31,6 @@ public class UserController {
         Map<String, Object> userDetails = new HashMap<>();
 
         userDetails.put("username", username);
-        //return userDetails;
-//        UserPrincipalService userPrincipalService = new UserPrincipalService(userRepository);
-//        userPrincipalService.loadUserByUsername(username);
-//        User user =  userPrincipalService.findUserByUsername(username);
-//        String name=  user.getUsername();
-
-//        userDetails.put("username", name);
         return userDetails;
 
     }

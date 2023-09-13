@@ -24,6 +24,7 @@ public class DataSeeder {
             if (userRepository.findByUsername("vijay_admin").isEmpty()) {
                 String password = passwordEncoder.encode("Prashanth123");
                 userRepository.save(new User("vijay_admin", password));
+
             }
 
         };
