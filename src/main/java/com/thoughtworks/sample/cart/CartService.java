@@ -49,12 +49,4 @@ public class CartService {
         return "Item removed from the cart";
     }
 
-    public String deleteItemByInventoryId(int id) {
-        if(!cartRepository.existsById(id))
-        {
-            return "This item is not present in cart";
-        }
-        cartRepository.deleteById(id);
-        return "Item removed from cart as it is modified in inventory";
-    }
 }

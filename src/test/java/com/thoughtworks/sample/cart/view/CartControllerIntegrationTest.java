@@ -159,25 +159,4 @@ public class CartControllerIntegrationTest {
                 .andExpect(status().is4xxClientError());
     }
 
-    @Test
-    public void shouldReturnMessageWhenValidIsGivenForDeletion() throws Exception, ItemNotFoundException {
-        int id =1;
-        when(cartService.deleteItemByInventoryId(id)).thenReturn("Item removed from cart as it is modified in inventory");
-
-        mockMvc.perform(delete("/cart/byInventory/{id}",id)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string("Item removed from cart as it is modified in inventory"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void shouldReturnMessageWhenInvalidIdIsGivenForDeletion() throws Exception {
-        int id =16;
-        when(cartService.deleteItemByInventoryId(id)).thenReturn("This Item is not present in cart");
-
-        mockMvc.perform(delete("/cart/byInventory/{id}",id)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string("This Item is not present in cart"))
-                .andExpect(status().isOk());
-    }
 }

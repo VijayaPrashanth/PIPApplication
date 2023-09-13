@@ -129,31 +129,5 @@ public class CartServiceTest {
         assertThrows(ItemNotFoundException.class,()-> cartService.deleteItem(id));
 
     }
-    @Test
-    public void shouldDeleteItemFromCartByInventory() throws ItemNotFoundException {
-
-        int id = 1;
-
-        when(cartRepository.existsById(id)).thenReturn(true);
-        String result = cartService.deleteItemByInventoryId(id);
-
-        verify(cartRepository).existsById(id);
-        verify(cartRepository).deleteById(id);
-        assertEquals("Item removed from cart as it is modified in inventory", result);
-    }
-
-    @Test()
-    public void shouldReturnItemIsNotPresentInCartWhenInvalidIdIsGiven() throws ItemNotFoundException {
-        int id = 1;
-
-        when(cartRepository.existsById(id)).thenReturn(false);
-
-        String result = cartService.deleteItemByInventoryId(id);
-
-        verify(cartRepository).existsById(id);
-        assertEquals("This item is not present in cart", result);
-
-    }
-
 
 }

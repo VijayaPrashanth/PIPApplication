@@ -45,8 +45,4 @@ public class CartController {
     public String deleteItem(@PathVariable int id) throws ItemNotFoundException {
         return cartService.deleteItem(id);
     }
-    @DeleteMapping("/byInventory/{id}")
-    public String deleteItemByInventory(@PathVariable int id) throws ItemNotFoundException {
-        return cartService.deleteItemByInventoryId(id);
-    }
 }
